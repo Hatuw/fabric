@@ -264,6 +264,7 @@ func initializeMultichannelRegistrar(conf *config.TopLevel, signer crypto.LocalS
 
 func updateTrustedRoots(srv comm.GRPCServer, rootCASupport *comm.CASupport,
 	cm channelconfig.Resources) {
+	logger.Debugf("[Start]updateTrustedRoots()")
 	rootCASupport.Lock()
 	defer rootCASupport.Unlock()
 
@@ -356,6 +357,7 @@ func updateTrustedRoots(srv comm.GRPCServer, rootCASupport *comm.CASupport,
 			logger.Warningf(msg, cm.ConfigtxValidator().ChainID(), err)
 		}
 	}
+	logger.Debugf("[End]updateTrustedRoots()")
 }
 
 func prettyPrintStruct(i interface{}) {

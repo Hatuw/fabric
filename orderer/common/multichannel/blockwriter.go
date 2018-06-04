@@ -42,6 +42,7 @@ type BlockWriter struct {
 }
 
 func newBlockWriter(lastBlock *cb.Block, r *Registrar, support blockWriterSupport) *BlockWriter {
+	logger.Debugf("[Start]newBlockWriter()")
 	bw := &BlockWriter{
 		support:       support,
 		lastConfigSeq: support.Sequence(),
@@ -60,11 +61,13 @@ func newBlockWriter(lastBlock *cb.Block, r *Registrar, support blockWriterSuppor
 	}
 
 	logger.Debugf("[channel: %s] Creating block writer for tip of chain (blockNumber=%d, lastConfigBlockNum=%d, lastConfigSeq=%d)", support.ChainID(), lastBlock.Header.Number, bw.lastConfigBlockNum, bw.lastConfigSeq)
+	logger.Debugf("[End]newBlockWriter()")
 	return bw
 }
 
 // CreateNextBlock creates a new block with the next block number, and the given contents.
 func (bw *BlockWriter) CreateNextBlock(messages []*cb.Envelope) *cb.Block {
+	logger.Debugf("[Start]CreateNextBlock()")
 	previousBlockHash := bw.lastBlock.Header.Hash()
 
 	data := &cb.BlockData{
@@ -82,7 +85,7 @@ func (bw *BlockWriter) CreateNextBlock(messages []*cb.Envelope) *cb.Block {
 	block := cb.NewBlock(bw.lastBlock.Header.Number+1, previousBlockHash)
 	block.Header.DataHash = data.Hash()
 	block.Data = data
-
+	logger.Debugf("[End]CreateNextBlock()")
 	return block
 }
 
@@ -90,6 +93,7 @@ func (bw *BlockWriter) CreateNextBlock(messages []*cb.Envelope) *cb.Block {
 // This call will block until the new config has taken effect, then will return
 // while the block is written asynchronously to disk.
 func (bw *BlockWriter) WriteConfigBlock(block *cb.Block, encodedMetadataValue []byte) {
+	logger.Debugf("[Start]WriteConfigBlock()")
 	ctx, err := utils.ExtractEnvelope(block, 0)
 	if err != nil {
 		logger.Panicf("Told to write a config block, but could not get configtx: %s", err)
@@ -138,6 +142,7 @@ func (bw *BlockWriter) WriteConfigBlock(block *cb.Block, encodedMetadataValue []
 	}
 
 	bw.WriteBlock(block, encodedMetadataValue)
+	logger.Debugf("[End]WriteConfigBlock()")
 }
 
 // WriteBlock should be invoked for blocks which contain normal transactions.
@@ -147,6 +152,7 @@ func (bw *BlockWriter) WriteConfigBlock(block *cb.Block, encodedMetadataValue []
 // then release the lock.  This allows the calling thread to begin assembling the next block
 // before the commit phase is complete.
 func (bw *BlockWriter) WriteBlock(block *cb.Block, encodedMetadataValue []byte) {
+	logger.Debugf("[Start]WriteBlock()")
 	bw.committingBlock.Lock()
 	bw.lastBlock = block
 
@@ -154,11 +160,13 @@ func (bw *BlockWriter) WriteBlock(block *cb.Block, encodedMetadataValue []byte) 
 		defer bw.committingBlock.Unlock()
 		bw.commitBlock(encodedMetadataValue)
 	}()
+	logger.Debugf("[End]WriteBlock()")
 }
 
 // commitBlock should only ever be invoked with the bw.committingBlock held
 // this ensures that the encoded config sequence numbers stay in sync
 func (bw *BlockWriter) commitBlock(encodedMetadataValue []byte) {
+	logger.Debugf("[Start]commitBlock()")
 	// Set the orderer-related metadata field
 	if encodedMetadataValue != nil {
 		bw.lastBlock.Metadata.Metadata[cb.BlockMetadataIndex_ORDERER] = utils.MarshalOrPanic(&cb.Metadata{Value: encodedMetadataValue})
@@ -171,9 +179,11 @@ func (bw *BlockWriter) commitBlock(encodedMetadataValue []byte) {
 		logger.Panicf("[channel: %s] Could not append block: %s", bw.support.ChainID(), err)
 	}
 	logger.Debugf("[channel: %s] Wrote block %d", bw.support.ChainID(), bw.lastBlock.GetHeader().Number)
+	logger.Debugf("[End]commitBlock()")
 }
 
 func (bw *BlockWriter) addBlockSignature(block *cb.Block) {
+	logger.Debugf("[Start]addBlockSignature()")
 	blockSignature := &cb.MetadataSignature{
 		SignatureHeader: utils.MarshalOrPanic(utils.NewSignatureHeaderOrPanic(bw.support)),
 	}
@@ -190,9 +200,11 @@ func (bw *BlockWriter) addBlockSignature(block *cb.Block) {
 			blockSignature,
 		},
 	})
+	logger.Debugf("[End]addBlockSignature()")
 }
 
 func (bw *BlockWriter) addLastConfigSignature(block *cb.Block) {
+	logger.Debugf("[Start]addLastConfigSignature()")
 	configSeq := bw.support.Sequence()
 	if configSeq > bw.lastConfigSeq {
 		logger.Debugf("[channel: %s] Detected lastConfigSeq transitioning from %d to %d, setting lastConfigBlockNum from %d to %d", bw.support.ChainID(), bw.lastConfigSeq, configSeq, bw.lastConfigBlockNum, block.Header.Number)
@@ -215,4 +227,5 @@ func (bw *BlockWriter) addLastConfigSignature(block *cb.Block) {
 			lastConfigSignature,
 		},
 	})
+	logger.Debugf("[End]addLastConfigSignature()")
 }

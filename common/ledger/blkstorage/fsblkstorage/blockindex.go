@@ -95,6 +95,7 @@ func (index *blockIndex) indexBlock(blockIdxInfo *blockIdxInfo) error {
 		logger.Debug("Not indexing block... as nothing to index")
 		return nil
 	}
+	logger.Debugf("[Start]indexBlock()")
 	logger.Debugf("Indexing block [%s]", blockIdxInfo)
 	flp := blockIdxInfo.flp
 	txOffsets := blockIdxInfo.txOffsets
@@ -160,6 +161,7 @@ func (index *blockIndex) indexBlock(blockIdxInfo *blockIdxInfo) error {
 	if err := index.db.WriteBatch(batch, true); err != nil {
 		return err
 	}
+	logger.Debugf("[End]indexBlock()")
 	return nil
 }
 

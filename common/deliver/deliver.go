@@ -151,6 +151,7 @@ func (ds *deliverHandler) Handle(srv *DeliverServer) error {
 }
 
 func (ds *deliverHandler) deliverBlocks(srv *DeliverServer, envelope *cb.Envelope) error {
+	logger.Debugf("[Start]deliverBlocks()")
 	addr := util.ExtractRemoteAddress(srv.Context())
 	payload, err := utils.UnmarshalPayload(envelope.Payload)
 	if err != nil {
@@ -273,6 +274,7 @@ func (ds *deliverHandler) deliverBlocks(srv *DeliverServer, envelope *cb.Envelop
 
 	logger.Debugf("[channel: %s] Done delivering to %s for (%p)", chdr.ChannelId, addr, seekInfo)
 
+	logger.Debugf("[End]deliverBlocks()")
 	return nil
 
 }

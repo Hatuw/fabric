@@ -64,6 +64,8 @@ func NewReceiverImpl(sharedConfigManager channelconfig.Orderer) Receiver {
 //
 // Note that messageBatches can not be greater than 2.
 func (r *receiver) Ordered(msg *cb.Envelope) (messageBatches [][]*cb.Envelope, pending bool) {
+	logger.Debugf("[Start]Ordered()")
+	defer logger.Debugf("[End]Ordered()")
 	messageSizeBytes := messageSizeBytes(msg)
 	if messageSizeBytes > r.sharedConfigManager.BatchSize().PreferredMaxBytes {
 		logger.Debugf("The current message, with %v bytes, is larger than the preferred batch size of %v bytes and will be isolated.", messageSizeBytes, r.sharedConfigManager.BatchSize().PreferredMaxBytes)
@@ -106,6 +108,8 @@ func (r *receiver) Ordered(msg *cb.Envelope) (messageBatches [][]*cb.Envelope, p
 
 // Cut returns the current batch and starts a new one
 func (r *receiver) Cut() []*cb.Envelope {
+	logger.Debugf("[Start]Cut()")
+	defer logger.Debugf("[End]Cut()")
 	batch := r.pendingBatch
 	r.pendingBatch = nil
 	r.pendingBatchSizeBytes = 0

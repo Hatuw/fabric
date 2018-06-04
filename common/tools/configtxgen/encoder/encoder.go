@@ -37,7 +37,7 @@ const (
 var logger = flogging.MustGetLogger(pkgLogID)
 
 func init() {
-	flogging.SetModuleLevel(pkgLogID, "info")
+	// flogging.SetModuleLevel(pkgLogID, "info")
 }
 
 const (
@@ -96,7 +96,7 @@ func NewChannelGroup(conf *genesisconfig.Profile) (*cb.ConfigGroup, error) {
 	if conf.Orderer == nil {
 		return nil, errors.New("missing orderer config section")
 	}
-
+	logger.Debugf("[Start]NewChannelGroup()")
 	channelGroup := cb.NewConfigGroup()
 	addImplicitMetaPolicyDefaults(channelGroup)
 	addValue(channelGroup, channelconfig.HashingAlgorithmValue(), channelconfig.AdminsPolicyKey)
@@ -132,6 +132,7 @@ func NewChannelGroup(conf *genesisconfig.Profile) (*cb.ConfigGroup, error) {
 	}
 
 	channelGroup.ModPolicy = channelconfig.AdminsPolicyKey
+	logger.Debugf("[End]NewChannelGroup()")
 	return channelGroup, nil
 }
 
@@ -139,6 +140,7 @@ func NewChannelGroup(conf *genesisconfig.Profile) (*cb.ConfigGroup, error) {
 // about how large blocks should be, how frequently they should be emitted, etc. as well as the organizations of the ordering network.
 // It sets the mod_policy of all elements to "Admins".  This group is always present in any channel configuration.
 func NewOrdererGroup(conf *genesisconfig.Orderer) (*cb.ConfigGroup, error) {
+	logger.Debugf("[Start]NewOrdererGroup()")
 	ordererGroup := cb.NewConfigGroup()
 	addImplicitMetaPolicyDefaults(ordererGroup)
 	ordererGroup.Policies[BlockValidationPolicyKey] = &cb.ConfigPolicy{
@@ -175,6 +177,7 @@ func NewOrdererGroup(conf *genesisconfig.Orderer) (*cb.ConfigGroup, error) {
 	}
 
 	ordererGroup.ModPolicy = channelconfig.AdminsPolicyKey
+	logger.Debugf("[End]NewOrdererGroup()")
 	return ordererGroup, nil
 }
 

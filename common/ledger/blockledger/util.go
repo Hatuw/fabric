@@ -17,9 +17,17 @@ import (
 	"github.com/golang/protobuf/proto"
 	cb "github.com/hyperledger/fabric/protos/common"
 	ab "github.com/hyperledger/fabric/protos/orderer"
+
+	"github.com/hyperledger/fabric/common/flogging"
+)
+
+const (
+	pkgLogID                = "common/ledger/blockledger/util"
 )
 
 var closedChan chan struct{}
+
+var logger = flogging.MustGetLogger(pkgLogID)
 
 func init() {
 	closedChan = make(chan struct{})
@@ -48,6 +56,7 @@ func (nfei *NotFoundErrorIterator) Close() {}
 // XXX This will need to be modified to accept marshaled envelopes
 //     to accommodate non-deterministic marshaling
 func CreateNextBlock(rl Reader, messages []*cb.Envelope) *cb.Block {
+	logger.Debugf("[Start]CreateNextBlock()")
 	var nextBlockNumber uint64
 	var previousBlockHash []byte
 
@@ -81,12 +90,13 @@ func CreateNextBlock(rl Reader, messages []*cb.Envelope) *cb.Block {
 	block := cb.NewBlock(nextBlockNumber, previousBlockHash)
 	block.Header.DataHash = data.Hash()
 	block.Data = data
-
+	logger.Debugf("[End]CreateNextBlock()")
 	return block
 }
 
 // GetBlock is a utility method for retrieving a single block
 func GetBlock(rl Reader, index uint64) *cb.Block {
+	logger.Debugf("[Start]GetBlock()")
 	i, _ := rl.Iterator(&ab.SeekPosition{
 		Type: &ab.SeekPosition_Specified{
 			Specified: &ab.SeekSpecified{Number: index},
@@ -96,10 +106,13 @@ func GetBlock(rl Reader, index uint64) *cb.Block {
 	case <-i.ReadyChan():
 		block, status := i.Next()
 		if status != cb.Status_SUCCESS {
+			logger.Debugf("[End]GetBlock()")
 			return nil
 		}
+		logger.Debugf("[End]GetBlock()")
 		return block
 	default:
+		logger.Debugf("[End]GetBlock()")
 		return nil
 	}
 }

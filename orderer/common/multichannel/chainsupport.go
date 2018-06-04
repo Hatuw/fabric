@@ -34,6 +34,7 @@ func newChainSupport(
 	consenters map[string]consensus.Consenter,
 	signer crypto.LocalSigner,
 ) *ChainSupport {
+	logger.Debugf("[Start]newChainSupport()")
 	// Read in the last block and metadata for the channel
 	lastBlock := blockledger.GetBlock(ledgerResources, ledgerResources.Height()-1)
 
@@ -70,7 +71,7 @@ func newChainSupport(
 	}
 
 	logger.Debugf("[channel: %s] Done creating channel support resources", cs.ChainID())
-
+	logger.Debugf("[End]newChainSupport()")
 	return cs
 }
 

@@ -77,11 +77,13 @@ func GetBenchmarkServerPool() []*BenchmarkServer {
 
 // Start blocks until server being halted. It is to prevent main process to exit
 func (server *BenchmarkServer) Start() {
+	logger.Debugf("[Start]Start()")
 	server.halt = make(chan struct{})
 	close(server.start) // signal waiters that service is registered
 
 	// Block reading here to prevent process exit
 	<-server.halt
+	logger.Debugf("[End]Start()")
 }
 
 // Halt server

@@ -123,6 +123,7 @@ func getConfigTx(reader blockledger.Reader) *cb.Envelope {
 // NewRegistrar produces an instance of a *Registrar.
 func NewRegistrar(ledgerFactory blockledger.Factory, consenters map[string]consensus.Consenter,
 	signer crypto.LocalSigner, callbacks ...func(bundle *channelconfig.Bundle)) *Registrar {
+	logger.Debugf("[Start]NewRegistrar()")
 	r := &Registrar{
 		chains:        make(map[string]*ChainSupport),
 		ledgerFactory: ledgerFactory,
@@ -189,7 +190,7 @@ func NewRegistrar(ledgerFactory blockledger.Factory, consenters map[string]conse
 	if r.systemChannelID == "" {
 		logger.Panicf("No system chain found.  If bootstrapping, does your system channel contain a consortiums group definition?")
 	}
-
+	logger.Debugf("[End]NewRegistrar()")
 	return r
 }
 

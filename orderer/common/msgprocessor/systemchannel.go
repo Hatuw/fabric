@@ -209,6 +209,7 @@ func NewDefaultTemplator(support DefaultTemplatorSupport) *DefaultTemplator {
 
 // NewChannelConfig creates a new template channel configuration based on the current config in the ordering system channel.
 func (dt *DefaultTemplator) NewChannelConfig(envConfigUpdate *cb.Envelope) (channelconfig.Resources, error) {
+	logger.Debugf("[Start]NewChannelConfig()")
 	configUpdatePayload, err := utils.UnmarshalPayload(envConfigUpdate.Payload)
 	if err != nil {
 		return nil, fmt.Errorf("Failing initial channel config creation because of payload unmarshaling error: %s", err)
@@ -335,7 +336,7 @@ func (dt *DefaultTemplator) NewChannelConfig(envConfigUpdate *cb.Envelope) (chan
 	if err != nil {
 		return nil, err
 	}
-
+	logger.Debugf("[End]NewChannelConfig()")
 	return bundle, nil
 }
 

@@ -41,7 +41,7 @@
 #     use in the local machine.
 #   - docker-thirdparty - pulls thirdparty images (kafka,zookeeper,couchdb)
 
-BASE_VERSION = 1.1.1
+BASE_VERSION = 1.1.0
 PREV_VERSION = 1.1.0
 CHAINTOOL_RELEASE=1.1.0
 BASEIMAGE_RELEASE=0.4.6

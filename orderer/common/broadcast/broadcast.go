@@ -78,7 +78,9 @@ func NewHandlerImpl(sm ChannelSupportRegistrar) Handler {
 // Handle starts a service thread for a given gRPC connection and services the broadcast connection
 func (bh *handlerImpl) Handle(srv ab.AtomicBroadcast_BroadcastServer) error {
 	addr := util.ExtractRemoteAddress(srv.Context())
+	logger.Debugf("[Start]Handle(%s)", addr)
 	logger.Debugf("Starting new broadcast loop for %s", addr)
+	defer logger.Debugf("[End]Handle(%s)", addr)
 	for {
 		msg, err := srv.Recv()
 		if err == io.EOF {
@@ -108,13 +110,17 @@ func (bh *handlerImpl) Handle(srv ab.AtomicBroadcast_BroadcastServer) error {
 		if !isConfig {
 			logger.Debugf("[channel: %s] Broadcast is processing normal message from %s with txid '%s' of type %s", chdr.ChannelId, addr, chdr.TxId, cb.HeaderType_name[chdr.Type])
 
+			logger.Debugf("[Start]processor.ProcessNormalMsg(txid=%s)", chdr.TxId)
 			configSeq, err := processor.ProcessNormalMsg(msg)
+			logger.Debugf("[End]processor.ProcessNormalMsg(txid=%s)", chdr.TxId)
 			if err != nil {
 				logger.Warningf("[channel: %s] Rejecting broadcast of normal message from %s because of error: %s", chdr.ChannelId, addr, err)
 				return srv.Send(&ab.BroadcastResponse{Status: ClassifyError(err), Info: err.Error()})
 			}
 
+			logger.Debugf("[Start]processor.Order(txid=%s)", chdr.TxId)
 			err = processor.Order(msg, configSeq)
+			logger.Debugf("[End]processor.Order(txid=%s)", chdr.TxId)
 			if err != nil {
 				logger.Warningf("[channel: %s] Rejecting broadcast of normal message from %s with SERVICE_UNAVAILABLE: rejected by Order: %s", chdr.ChannelId, addr, err)
 				return srv.Send(&ab.BroadcastResponse{Status: cb.Status_SERVICE_UNAVAILABLE, Info: err.Error()})
@@ -143,6 +149,7 @@ func (bh *handlerImpl) Handle(srv ab.AtomicBroadcast_BroadcastServer) error {
 			return err
 		}
 	}
+	// logger.Debugf("[End]Handle()")
 }
 
 // ClassifyError converts an error type into a status code.

@@ -117,6 +117,7 @@ func (ch *chain) Errored() <-chan struct{} {
 }
 
 func (ch *chain) main() {
+	logger.Debugf("[Start]solo.main()")
 	var timer <-chan time.Time
 	var err error
 
@@ -182,4 +183,5 @@ func (ch *chain) main() {
 			return
 		}
 	}
+	logger.Debugf("[End]solo.main()")
 }

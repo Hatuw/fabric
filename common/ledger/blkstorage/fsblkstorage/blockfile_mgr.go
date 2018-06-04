@@ -97,6 +97,7 @@ At start up a new manager:
   *)  Updates blockchain info used by the APIs
 */
 func newBlockfileMgr(id string, conf *Conf, indexConfig *blkstorage.IndexConfig, indexStore *leveldbhelper.DBHandle) *blockfileMgr {
+	logger.Debugf("[Start]newBlockfileMgr()")
 	logger.Debugf("newBlockfileMgr() initializing file-based block storage for ledger: %s ", id)
 	//Determine the root directory for the blockfile storage, if it does not exist create it
 	rootDir := conf.getLedgerBlockDir(id)
@@ -172,6 +173,7 @@ func newBlockfileMgr(id string, conf *Conf, indexConfig *blkstorage.IndexConfig,
 			PreviousBlockHash: previousBlockHash}
 	}
 	mgr.bcInfo.Store(bcInfo)
+	logger.Debugf("[End]newBlockfileMgr()")
 	return mgr
 }
 
