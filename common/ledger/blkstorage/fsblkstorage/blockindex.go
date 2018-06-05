@@ -376,6 +376,7 @@ func (blockIdxInfo *blockIdxInfo) String() string {
 		buffer.WriteString(" locPointer=")
 		buffer.WriteString(txOffset.loc.String())
 		buffer.WriteString("\n")
+		logger.Debugf("indexing(txId=%s)" txOffset.txID)
 	}
 	txOffsetsString := buffer.String()
 
