@@ -130,6 +130,7 @@ func initializeProfilingService(conf *config.TopLevel) {
 	if conf.General.Profile.Enabled {
 		go func() {
 			logger.Info("Starting Go pprof profiling service on:", conf.General.Profile.Address)
+			logger.Debugf("Starting Go pprof profiling service on:", conf.General.Profile.Address)
 			// The ListenAndServe() call does not return unless an error occurs.
 			logger.Panic("Go pprof service failed:", http.ListenAndServe(conf.General.Profile.Address, nil))
 		}()

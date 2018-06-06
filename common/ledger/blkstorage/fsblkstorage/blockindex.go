@@ -96,6 +96,7 @@ func (index *blockIndex) indexBlock(blockIdxInfo *blockIdxInfo) error {
 		return nil
 	}
 	logger.Debugf("[Start]indexBlock()")
+	defer logger.Debugf("[End]indexBlock()")
 	logger.Debugf("Indexing block [%s]", blockIdxInfo)
 	flp := blockIdxInfo.flp
 	txOffsets := blockIdxInfo.txOffsets
@@ -161,7 +162,6 @@ func (index *blockIndex) indexBlock(blockIdxInfo *blockIdxInfo) error {
 	if err := index.db.WriteBatch(batch, true); err != nil {
 		return err
 	}
-	logger.Debugf("[End]indexBlock()")
 	return nil
 }
 
@@ -376,7 +376,7 @@ func (blockIdxInfo *blockIdxInfo) String() string {
 		buffer.WriteString(" locPointer=")
 		buffer.WriteString(txOffset.loc.String())
 		buffer.WriteString("\n")
-		logger.Debugf("indexing(txId=%s)" txOffset.txID)
+		logger.Debugf("indexing(txId=%s)", txOffset.txID)
 	}
 	txOffsetsString := buffer.String()
 
