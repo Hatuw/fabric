@@ -196,7 +196,7 @@ var defaults = TopLevel{
 		SystemChannel:  genesisconfig.TestChainID,
 		GenesisFile:    "genesisblock",
 		Profile: Profile{
-			Enabled: true,
+			Enabled: false,
 			Address: "0.0.0.0:6060",
 		},
 		LogLevel:    "INFO",

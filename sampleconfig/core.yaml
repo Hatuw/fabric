@@ -34,7 +34,8 @@ logging:
     # Default for all modules running within the scope of a peer.
     # Note: this value is only used when --logging-level or CORE_LOGGING_LEVEL
     #       are not set
-    level:       info
+    # level:       info
+    level:       debug
 
     # The overall default values mentioned above can be overridden for the
     # specific components listed in the override section below.
@@ -339,7 +340,8 @@ peer:
     # Used with Go profiling tools only in none production environment. In
     # production, it should be disabled (eg enabled: false)
     profile:
-        enabled:     false
+        # enabled:     false
+        enabled:     true
         listenAddress: 0.0.0.0:6060
 
     # Handlers defines custom handlers that can filter and mutate
